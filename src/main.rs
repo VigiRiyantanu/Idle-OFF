@@ -7,10 +7,10 @@
 
 mod app;
 mod autostart;
-mod config;
 mod idle;
 mod logger;
 mod popup;
+mod settings;
 mod settings_ui;
 mod shutdown;
 mod tray;
@@ -18,7 +18,6 @@ mod ui;
 mod util;
 
 use app::{Action, App, MenuAction};
-use config::Config;
 use idle::get_idle_seconds;
 use popup::{PopupWindow, IDC_CANCEL_SHUTDOWN, IDC_SHUTDOWN_NOW};
 use std::cell::RefCell;
@@ -379,8 +378,12 @@ unsafe extern "system" fn main_wnd_proc(
         // 2. Settings window modified configuration notification
         if msg == ctx.config_changed_msg {
             logger::log("Received config_changed_msg from settings window");
-            let new_config = Config::load();
-            let action = ctx.app.apply_config(&new_config);
+            let new_settings = settings::load();
+            if ctx.app.matches_settings(&new_settings) {
+                logger::log("Settings unchanged; ignoring reload");
+                return 0;
+            }
+            let action = ctx.app.apply_settings(&new_settings);
             dispatch_action(hwnd, ctx, action);
             sync_tooltip(ctx);
             return 0;
@@ -539,9 +542,9 @@ fn main() {
 
     DAEMON_MUTEX.store(mutex_handle as isize, Ordering::SeqCst);
 
-    // 3. Load persistent configuration
-    let config = Config::load();
-    let app = App::new(&config, test_seconds, dry_run);
+    // 3. Load persistent settings
+    let settings = settings::load();
+    let app = App::new(&settings, test_seconds, dry_run);
     let initial_tooltip = app.tooltip_text();
 
     // 4. Register hidden message receiver window class

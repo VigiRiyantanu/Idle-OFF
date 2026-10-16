@@ -3,9 +3,9 @@
 //! Orchestrates the custom header strip, left sidebar tab navigation, background layer,
 //! and tab content views in a compact mod-menu layout.
 
-use crate::autostart::{is_autostart_enabled, set_autostart_enabled};
-use crate::config::Config;
+use crate::autostart::set_autostart_enabled;
 use crate::idle::get_idle_seconds;
+use crate::settings::{self, Settings};
 use crate::ui::background::BackgroundLayer;
 use crate::ui::header::render_header;
 use crate::ui::sidebar::{render_sidebar, SettingsTab};
@@ -20,8 +20,7 @@ use windows_sys::Win32::UI::WindowsAndMessaging::{
 
 /// Graphical settings application state.
 pub struct SettingsApp {
-    config: Config,
-    autostart: bool,
+    settings: Settings,
     test_seconds: bool,
     current_tab: SettingsTab,
     daemon_hwnd: isize,
@@ -33,8 +32,7 @@ pub struct SettingsApp {
 impl SettingsApp {
     /// Creates a new settings application instance.
     pub fn new(test_seconds: bool) -> Self {
-        let config = Config::load();
-        let autostart = is_autostart_enabled();
+        let settings = settings::load();
 
         let daemon_class = to_wide("IdleOff_Daemon_Class");
         // SAFETY: Finding existing daemon receiver window to establish IPC message connection.
@@ -48,8 +46,7 @@ impl SettingsApp {
         let msg_test_popup = unsafe { RegisterWindowMessageW(str_test_popup.as_ptr()) };
 
         Self {
-            config,
-            autostart,
+            settings,
             test_seconds,
             current_tab: SettingsTab::Main,
             daemon_hwnd,
@@ -61,7 +58,7 @@ impl SettingsApp {
 
     /// Persists configuration to disk and notifies the background daemon.
     fn save_and_notify(&self) {
-        let _ = self.config.save();
+        let _ = settings::save(&self.settings);
         if self.daemon_hwnd != 0 {
             // SAFETY: Notifying daemon window via PostMessageW that configuration changed.
             unsafe {
@@ -110,7 +107,7 @@ impl eframe::App for SettingsApp {
         // 3. Frameless Header Strip with Drag interaction and Minimize/Close buttons
         render_header(ui);
 
-        let mut config_dirty = false;
+        let mut settings_dirty = false;
         let mut autostart_dirty = false;
         let mut trigger_test = false;
 
@@ -119,7 +116,7 @@ impl eframe::App for SettingsApp {
             ui.spacing_mut().item_spacing.x = 0.0;
 
             // Sidebar navigation
-            render_sidebar(ui, &mut self.current_tab, self.config.enabled);
+            render_sidebar(ui, &mut self.current_tab, self.settings.enabled);
 
             // Right tab content area
             ui.vertical(|ui| {
@@ -134,20 +131,20 @@ impl eframe::App for SettingsApp {
                         SettingsTab::Main => {
                             if render_main_tab(
                                 ui,
-                                &mut self.config,
+                                &mut self.settings,
                                 self.test_seconds,
                                 current_idle_secs,
                             ) {
-                                config_dirty = true;
+                                settings_dirty = true;
                             }
                         }
                         SettingsTab::Popup => {
-                            if render_popup_tab(ui, &mut self.config, &mut trigger_test) {
-                                config_dirty = true;
+                            if render_popup_tab(ui, &mut self.settings, &mut trigger_test) {
+                                settings_dirty = true;
                             }
                         }
                         SettingsTab::System => {
-                            if render_system_tab(ui, &mut self.autostart) {
+                            if render_system_tab(ui, &mut self.settings.start_with_windows) {
                                 autostart_dirty = true;
                             }
                         }
@@ -163,12 +160,11 @@ impl eframe::App for SettingsApp {
             self.trigger_test_popup();
         }
 
-        if config_dirty {
-            self.save_and_notify();
-        }
-
         if autostart_dirty {
-            let _ = set_autostart_enabled(self.autostart);
+            let _ = set_autostart_enabled(self.settings.start_with_windows);
+            self.save_and_notify();
+        } else if settings_dirty {
+            self.save_and_notify();
         }
     }
 }

@@ -1,7 +1,7 @@
 //! Application state, configuration, and explicit state machine for idle monitoring.
 
-use crate::config::Config;
 use crate::logger;
+use crate::settings::Settings;
 
 /// Menu item command IDs for the native tray context menu.
 /// Starts at 1001 as required by specifications.
@@ -210,9 +210,9 @@ pub struct App {
 }
 
 impl App {
-    /// Creates a new App instance from loaded configuration and command-line flags.
-    pub fn new(config: &Config, test_seconds: bool, dry_run: bool) -> Self {
-        let state = if config.enabled {
+    /// Creates a new App instance from loaded settings and command-line flags.
+    pub fn new(settings: &Settings, test_seconds: bool, dry_run: bool) -> Self {
+        let state = if settings.enabled {
             AppState::Monitoring
         } else {
             AppState::Paused
@@ -220,8 +220,8 @@ impl App {
 
         Self {
             state,
-            timeout: IdleTimeout::from_minutes(config.timeout_minutes),
-            show_popup: config.show_popup,
+            timeout: IdleTimeout::from_minutes(settings.timeout_minutes),
+            show_popup: settings.popup_enabled,
             test_seconds,
             dry_run,
         }
@@ -263,30 +263,38 @@ impl App {
         action
     }
 
-    /// Reloads settings from disk configuration.
-    pub fn apply_config(&mut self, config: &Config) -> Action {
+    /// Reloads settings from disk.
+    pub fn apply_settings(&mut self, settings: &Settings) -> Action {
         let prev_enabled = !matches!(self.state, AppState::Paused);
-        if config.enabled != prev_enabled {
-            self.state = if config.enabled {
+        if settings.enabled != prev_enabled {
+            self.state = if settings.enabled {
                 AppState::Monitoring
             } else {
                 AppState::Paused
             };
         }
-        self.timeout = IdleTimeout::from_minutes(config.timeout_minutes);
-        self.show_popup = config.show_popup;
+        self.timeout = IdleTimeout::from_minutes(settings.timeout_minutes);
+        self.show_popup = settings.popup_enabled;
 
         logger::log(&format!(
-            "Applied new config: enabled={}, timeout={}m, popup={}",
-            config.enabled, config.timeout_minutes, config.show_popup
+            "Applied new settings: enabled={}, timeout={}m, popup={}",
+            settings.enabled, settings.timeout_minutes, settings.popup_enabled
         ));
 
-        if !config.enabled && matches!(self.state, AppState::Warning { .. }) {
+        if !settings.enabled && matches!(self.state, AppState::Warning { .. }) {
             self.state = AppState::Paused;
             Action::CloseWarning
         } else {
             Action::None
         }
+    }
+
+    /// Checks if the runtime state matches the specified settings.
+    pub fn matches_settings(&self, settings: &Settings) -> bool {
+        let current_enabled = !matches!(self.state, AppState::Paused);
+        current_enabled == settings.enabled
+            && self.timeout.as_minutes() == settings.timeout_minutes
+            && self.show_popup == settings.popup_enabled
     }
 
     /// Invoked when the user clicks the "Cancel" button or closes the countdown popup.
@@ -364,13 +372,15 @@ impl App {
         }
     }
 
-    /// Synchronizes current settings to a [`Config`] struct for disk persistence.
+    /// Synchronizes current settings to a [`Settings`] struct for disk persistence.
     #[allow(dead_code)]
-    pub fn to_config(&self) -> Config {
-        Config {
+    pub fn to_settings(&self) -> Settings {
+        Settings {
+            version: 1,
             enabled: !matches!(self.state, AppState::Paused),
             timeout_minutes: self.timeout.as_minutes(),
-            show_popup: self.show_popup,
+            popup_enabled: self.show_popup,
+            start_with_windows: false,
         }
     }
 
@@ -558,7 +568,7 @@ mod tests {
 
     #[test]
     fn test_cancel_button_action() {
-        let mut app = App::new(&Config::default(), false, false);
+        let mut app = App::new(&Settings::default(), false, false);
         app.state = AppState::Warning {
             remaining_seconds: 120,
         };

@@ -6,7 +6,7 @@
 //! - [`render_system_tab`]: Start with Windows registry toggle.
 //! - [`render_about_tab`]: Application version, architecture specs, and tray info.
 
-use crate::config::Config;
+use crate::settings::Settings;
 use crate::ui::theme::{
     COLOR_ACCENT, COLOR_MUTED, COLOR_TEXT, FONT_SIZE_BODY, SPACING_MD, SPACING_SM, SPACING_XS,
 };
@@ -19,7 +19,7 @@ use eframe::egui::{self, FontId};
 /// Renders the "Main" tab view.
 pub fn render_main_tab(
     ui: &mut egui::Ui,
-    config: &mut Config,
+    settings: &mut Settings,
     test_seconds: bool,
     idle_secs: u32,
 ) -> bool {
@@ -30,9 +30,9 @@ pub fn render_main_tab(
     ui.add_space(SPACING_XS);
 
     let timeout_secs = if test_seconds {
-        config.timeout_minutes
+        settings.timeout_minutes
     } else {
-        config.timeout_minutes * 60
+        settings.timeout_minutes * 60
     };
     let countdown = if idle_secs >= timeout_secs {
         Some(0)
@@ -40,7 +40,7 @@ pub fn render_main_tab(
         Some(timeout_secs.saturating_sub(idle_secs))
     };
 
-    live_telemetry_readouts(ui, idle_secs, countdown, config.enabled);
+    live_telemetry_readouts(ui, idle_secs, countdown, settings.enabled);
 
     ui.add_space(SPACING_SM);
     hairline_divider(ui);
@@ -50,7 +50,7 @@ pub fn render_main_tab(
     section_header(ui, "IDLE TIMEOUT THRESHOLD");
     ui.add_space(SPACING_XS);
 
-    if segmented_timeout_selector(ui, &mut config.timeout_minutes, test_seconds) {
+    if segmented_timeout_selector(ui, &mut settings.timeout_minutes, test_seconds) {
         changed = true;
     }
 
@@ -62,7 +62,7 @@ pub fn render_main_tab(
     section_header(ui, "SERVICE STATE");
     ui.add_space(SPACING_XS);
 
-    if flat_toggle_row(ui, "Idle Monitoring Enabled", &mut config.enabled).changed() {
+    if flat_toggle_row(ui, "Idle Monitoring Enabled", &mut settings.enabled).changed() {
         changed = true;
     }
 
@@ -72,7 +72,7 @@ pub fn render_main_tab(
 /// Renders the "Popup" tab view.
 pub fn render_popup_tab(
     ui: &mut egui::Ui,
-    config: &mut Config,
+    settings: &mut Settings,
     test_popup_clicked: &mut bool,
 ) -> bool {
     let mut changed = false;
@@ -83,7 +83,7 @@ pub fn render_popup_tab(
     if flat_toggle_row(
         ui,
         "Cancel popup 3 min before shutdown",
-        &mut config.show_popup,
+        &mut settings.popup_enabled,
     )
     .changed()
     {

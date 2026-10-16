@@ -27,9 +27,9 @@ IdleOff is a minimal-footprint, native Windows desktop background utility built 
 4. **Tick Math & Wrap-Around**:
    - The Win32 tick counter wraps around every ~49.7 days of continuous system uptime.
    - Always use `current_ticks.wrapping_sub(last_input_ticks)` for elapsed millisecond calculations.
-5. **Atomic Config Persistence**:
-   - Always save `%APPDATA%\IdleOff\config.toml` using atomic temp-file write followed by rename.
-   - If corrupted or missing, always fall back gracefully to default settings (`enabled=true`, `timeout=30`, `popup=true`).
+5. **Atomic Settings Persistence**:
+   - Always save `%TEMP%\idle-off\settings.json` using atomic temp-file write followed by rename.
+   - If corrupted or missing, always fall back gracefully to default settings (`enabled=true`, `timeout=30`, `popup_enabled=true`, `start_with_windows=false`).
 6. **Autostart Sync**:
    - When checking or displaying autostart state, query `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` directly rather than trusting cached flags.
 
@@ -65,7 +65,7 @@ cargo build --release
 | `src/tray.rs` | Shell notification icon, tooltip updates, and context menu construction. |
 | `src/popup.rs` | Always-on-top, non-activating native countdown warning window. |
 | `src/settings_ui.rs` | `eframe` / `egui` control panel for configuration and telemetry. |
-| `src/config.rs` | Zero-dependency handwritten TOML parser and atomic disk storage. |
+| `src/settings.rs` | Zero-dependency handwritten JSON parser and atomic disk storage (`%TEMP%\idle-off\settings.json`). |
 | `src/autostart.rs` | Windows Registry Run key reading and writing. |
 | `src/shutdown.rs` | `SE_SHUTDOWN_NAME` privilege escalation and `ExitWindowsEx` execution. |
 | `src/logger.rs` | Non-panicking timestamped file logger for diagnostic mode (`--log`). |
