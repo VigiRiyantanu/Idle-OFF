@@ -93,7 +93,7 @@ pub fn render_popup_tab(
     ui.add_space(SPACING_XS);
     ui.label(
         egui::RichText::new("Displays a native always-on-top countdown window allowing instant cancellation before shutdown occurs.")
-            .font(FontId::proportional(11.0))
+            .font(FontId::proportional(13.0))
             .color(COLOR_MUTED),
     );
 
@@ -125,7 +125,7 @@ pub fn render_system_tab(ui: &mut egui::Ui, autostart: &mut bool) -> bool {
     ui.add_space(SPACING_XS);
     ui.label(
         egui::RichText::new("Registers IdleOff in HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run for automatic background startup at login.")
-            .font(FontId::proportional(11.0))
+            .font(FontId::proportional(13.0))
             .color(COLOR_MUTED),
     );
 
@@ -139,7 +139,7 @@ pub fn render_system_tab(ui: &mut egui::Ui, autostart: &mut bool) -> bool {
         egui::RichText::new(
             "Status: Resident pure Win32 daemon running in system tray with zero GUI overhead.",
         )
-        .font(FontId::proportional(11.0))
+        .font(FontId::proportional(13.0))
         .color(COLOR_MUTED),
     );
 
@@ -154,13 +154,13 @@ pub fn render_about_tab(ui: &mut egui::Ui) {
     ui.horizontal(|ui| {
         ui.label(
             egui::RichText::new("IDLEOFF")
-                .font(FontId::monospace(13.0))
+                .font(FontId::monospace(15.5))
                 .color(COLOR_ACCENT)
                 .strong(),
         );
         ui.label(
             egui::RichText::new("v0.1.0")
-                .font(FontId::monospace(11.0))
+                .font(FontId::monospace(13.0))
                 .color(COLOR_MUTED),
         );
     });
@@ -180,7 +180,7 @@ pub fn render_about_tab(ui: &mut egui::Ui) {
     ui.add_space(SPACING_XS);
     ui.label(
         egui::RichText::new("• Drag top bar to move window.\n• [Esc] or [✕] closes settings window (daemon stays running in tray).\n• To terminate IdleOff completely, right-click tray icon and choose Exit.")
-            .font(FontId::proportional(11.0))
+            .font(FontId::proportional(13.0))
             .color(COLOR_MUTED),
     );
 }

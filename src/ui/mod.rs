@@ -96,9 +96,9 @@ pub fn run_settings_window(test_seconds: bool) {
         return;
     }
 
-    // Calculate window centered coordinates on primary screen (compact 420x300 mod-menu size)
-    let window_w = 420.0;
-    let window_h = 300.0;
+    // Calculate window centered coordinates on primary screen (compact 450x320 mod-menu size)
+    let window_w = 450.0;
+    let window_h = 320.0;
     let (center_x, center_y) = unsafe {
         let screen_w = GetSystemMetrics(SM_CXSCREEN) as f32;
         let screen_h = GetSystemMetrics(SM_CYSCREEN) as f32;

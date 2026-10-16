@@ -40,7 +40,7 @@ pub fn segmented_timeout_selector(
     let gap = SPACING_XS;
     let total_width = ui.available_width();
     let segment_width = ((total_width - gap * (num_segments - 1.0)) / num_segments).max(10.0);
-    let segment_height = 24.0;
+    let segment_height = 26.0;
 
     ui.horizontal(|ui| {
         ui.spacing_mut().item_spacing.x = gap;
@@ -112,7 +112,7 @@ pub fn segmented_timeout_selector(
 
             let galley = ui.painter().layout_no_wrap(
                 label.to_string(),
-                FontId::proportional(11.0),
+                FontId::proportional(13.5),
                 text_color,
             );
             let text_pos = egui::pos2(
@@ -128,10 +128,10 @@ pub fn segmented_timeout_selector(
 
 /// Custom flat mod-menu toggle switch row with hover highlight.
 pub fn flat_toggle_row(ui: &mut egui::Ui, label: &str, value: &mut bool) -> Response {
-    let row_height = 26.0;
-    let switch_width = 28.0;
-    let switch_height = 14.0;
-    let thumb_size = 8.0;
+    let row_height = 28.0;
+    let switch_width = 32.0;
+    let switch_height = 16.0;
+    let thumb_size = 10.0;
 
     let (row_rect, response) =
         ui.allocate_exact_size(Vec2::new(ui.available_width(), row_height), Sense::click());
@@ -216,7 +216,7 @@ pub fn live_telemetry_readouts(
 ) {
     let gap = SPACING_XS;
     let card_w = ((ui.available_width() - gap) / 2.0).max(10.0);
-    let card_h = 44.0;
+    let card_h = 48.0;
 
     let idle_str = format_countdown(idle_secs);
     let shutdown_str = if enabled {
@@ -274,14 +274,14 @@ fn render_telemetry_card(
         FontId::monospace(FONT_SIZE_READOUT),
         value_color,
     );
-    let val_pos = egui::pos2(rect.min.x + 6.0, rect.min.y + 18.0);
+    let val_pos = egui::pos2(rect.min.x + 6.0, rect.min.y + 19.0);
     ui.painter().galley(val_pos, val_galley, value_color);
 }
 
 /// Mod menu style outlined button.
 pub fn mod_button(ui: &mut egui::Ui, label: &str) -> bool {
     let (rect, response) =
-        ui.allocate_exact_size(Vec2::new(ui.available_width(), 26.0), Sense::click());
+        ui.allocate_exact_size(Vec2::new(ui.available_width(), 28.0), Sense::click());
 
     let (bg, border, text_color) = if response.is_pointer_button_down_on() {
         (
@@ -313,7 +313,7 @@ pub fn mod_button(ui: &mut egui::Ui, label: &str) -> bool {
 
     let galley =
         ui.painter()
-            .layout_no_wrap(label.to_string(), FontId::proportional(11.0), text_color);
+            .layout_no_wrap(label.to_string(), FontId::proportional(13.5), text_color);
     let text_pos = egui::pos2(
         rect.center().x - galley.size().x / 2.0,
         rect.center().y - galley.size().y / 2.0,

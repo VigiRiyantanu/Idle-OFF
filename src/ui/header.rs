@@ -11,7 +11,7 @@ use crate::ui::theme::{
 };
 use eframe::egui::{self, Color32, FontId, Rect, Sense, Stroke, Vec2, ViewportCommand};
 
-pub const HEADER_HEIGHT: f32 = 26.0;
+pub const HEADER_HEIGHT: f32 = 28.0;
 const BUTTON_WIDTH: f32 = 28.0;
 
 /// Renders the custom window titlebar header strip.

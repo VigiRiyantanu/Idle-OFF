@@ -11,7 +11,7 @@ use crate::ui::theme::{
 };
 use eframe::egui::{self, Color32, FontId, Rect, Sense, Stroke, Vec2};
 
-pub const SIDEBAR_WIDTH: f32 = 105.0;
+pub const SIDEBAR_WIDTH: f32 = 118.0;
 
 /// Available tabs in the mod-menu settings interface.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -54,7 +54,7 @@ pub fn render_sidebar(ui: &mut egui::Ui, current_tab: &mut SettingsTab, daemon_e
         Stroke::new(1.0, CARD_BORDER),
     );
 
-    let tab_height = 32.0;
+    let tab_height = 34.0;
     let mut top_y = sidebar_rect.min.y + 6.0;
 
     for tab in SettingsTab::ALL {
@@ -137,9 +137,11 @@ pub fn render_sidebar(ui: &mut egui::Ui, current_tab: &mut SettingsTab, daemon_e
         COLOR_MUTED
     };
 
-    let status_galley =
-        ui.painter()
-            .layout_no_wrap(status_str.to_string(), FontId::monospace(9.5), status_color);
+    let status_galley = ui.painter().layout_no_wrap(
+        status_str.to_string(),
+        FontId::monospace(11.5),
+        status_color,
+    );
     let status_pos = egui::pos2(
         footer_rect.min.x + 12.0,
         footer_rect.center().y - status_galley.size().y / 2.0,

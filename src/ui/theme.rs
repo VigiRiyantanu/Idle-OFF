@@ -58,12 +58,12 @@ pub const SPACING_SM: f32 = 8.0;
 pub const SPACING_MD: f32 = 12.0;
 
 // --- Typography Font Scale ---
-pub const FONT_SIZE_HEADER_TITLE: f32 = 11.0;
-pub const FONT_SIZE_SECTION: f32 = 10.0;
-pub const FONT_SIZE_TAB: f32 = 11.0;
-pub const FONT_SIZE_BODY: f32 = 12.0;
-pub const FONT_SIZE_READOUT: f32 = 18.0;
-pub const FONT_SIZE_READOUT_LABEL: f32 = 9.0;
+pub const FONT_SIZE_HEADER_TITLE: f32 = 14.0;
+pub const FONT_SIZE_SECTION: f32 = 12.5;
+pub const FONT_SIZE_TAB: f32 = 14.5;
+pub const FONT_SIZE_BODY: f32 = 14.5;
+pub const FONT_SIZE_READOUT: f32 = 26.0;
+pub const FONT_SIZE_READOUT_LABEL: f32 = 12.0;
 
 /// Installs the Minecraft font into egui font definitions.
 pub fn configure_fonts(ctx: &egui::Context) {
