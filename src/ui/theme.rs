@@ -15,8 +15,8 @@ use eframe::egui::{
 };
 use std::sync::Arc;
 
-/// Embedded Inter-Regular font (SIL Open Font License).
-pub const FONT_INTER: &[u8] = include_bytes!("../../assets/inter.otf");
+/// Embedded Minecraft font.
+pub const FONT_MINECRAFT: &[u8] = include_bytes!("../../assets/minecraft.ttf");
 
 // --- Palette Constants ---
 /// Deep obsidian black sampled from the character cloak and hair (#141316).
@@ -65,28 +65,28 @@ pub const FONT_SIZE_BODY: f32 = 12.0;
 pub const FONT_SIZE_READOUT: f32 = 18.0;
 pub const FONT_SIZE_READOUT_LABEL: f32 = 9.0;
 
-/// Installs the clean sans-serif Inter font into egui font definitions.
+/// Installs the Minecraft font into egui font definitions.
 pub fn configure_fonts(ctx: &egui::Context) {
     let mut fonts = egui::FontDefinitions::default();
 
     fonts.font_data.insert(
-        "inter".to_owned(),
-        Arc::new(egui::FontData::from_static(FONT_INTER)),
+        "minecraft".to_owned(),
+        Arc::new(egui::FontData::from_static(FONT_MINECRAFT)),
     );
 
-    // Set Inter as the first priority font for proportional text
+    // Set Minecraft as the first priority font for proportional text
     fonts
         .families
         .entry(FontFamily::Proportional)
         .or_default()
-        .insert(0, "inter".to_owned());
+        .insert(0, "minecraft".to_owned());
 
-    // Also use Inter for numeric readouts with tabular/consistent numbers
+    // Also use Minecraft for monospace text and numeric readouts
     fonts
         .families
         .entry(FontFamily::Monospace)
         .or_default()
-        .insert(0, "inter".to_owned());
+        .insert(0, "minecraft".to_owned());
 
     ctx.set_fonts(fonts);
 }

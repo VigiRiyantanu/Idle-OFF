@@ -1,7 +1,7 @@
 //! Modular UI architecture for the IdleOff settings window.
 //!
 //! Submodules:
-//! - [`theme`]: Mod-menu color palette, typography scale, Inter font, and layout spacing constants.
+//! - [`theme`]: Mod-menu color palette, typography scale, Minecraft font, and layout spacing constants.
 //! - [`background`]: Embedded PNG decoding, GPU texture caching, and stretched background painter.
 //! - [`widgets`]: Custom flat toggles, sharp segmented timeout selector, and telemetry cards.
 //! - [`header`]: Frameless draggable header strip with custom minimize and close buttons.
